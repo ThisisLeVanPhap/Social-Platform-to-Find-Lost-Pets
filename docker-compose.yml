@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    command: daphne -b 0.0.0.0 -p 8000 MyProject.asgi:application
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=MyProject.settings
+  # web:
+  #   build: .
+  #   command: daphne -u /tmp/daphne.sock MyProject.asgi:application  # Sử dụng Daphne cho ASGI
+  #   ports:
+  #     - "8000:8000"  # HTTP
+  #     - "8001:8001"  # WebSocket
+  #   depends_on:
+  #     - redis
+  #   environment:
+  #     - DEBUG=1
+  #     - CHANNEL_LAYERS=default
+  #     - REDIS_HOST=redis
